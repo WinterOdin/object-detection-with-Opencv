@@ -10,6 +10,8 @@ with open('coco.names', 'r') as names: #and this too
 
 layerNames = neuralNetwork.getLayerNames()
 outLayers  = [layerNames[x[0]-1] for x in neuralNetwork.getUnconnectedOutLayers() ]
+randColor  = np.random.uniform(0, 255, size=(len(classNames), 3))
+
 
 #testing recognition on img
 
@@ -36,20 +38,23 @@ for x in objectInfo:
             h       = int( y[3] * height ) 
             x       = int(centerX - w / 2)
             y       = int(centerY - h / 2)
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0,255,0), 2)
+            
 
             containers.append([x, y, w, h])
             assurances.append(float(assurance))
             classIds.append(classId)
+            
 indexes = cv2.dnn.NMSBoxes(containers, assurances, 0.5, 0,4)
-font    = cv2.FONT_HERSHEY_COMPLEX
+font    = cv2.FONT_HERSHEY_PLAIN
 for i in range(len(containers)):
     if i in indexes:
         x, y, w, h = containers[i]
         name       = str(classNames[classIds[i]])
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(img, name, (x, y + 30), font,  2, (0, 0, 0))
- 
+        color      = randColor[i]
+        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
+        cv2.putText(img, name, (x, y + 30), font,  1.3, color, 2)
+
+print(indexes)
 cv2.imshow("test pic", img)
 cv2.waitKey(0)#for displaying 
 cv2.destroyAllWindows()
